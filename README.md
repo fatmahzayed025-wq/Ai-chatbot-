@@ -21,3 +21,35 @@ This is a standalone Python script designed for e-commerce platforms targeting S
 2. Install the required dependencies:
    ```bash
    pip install -r requirements.txt
+   ```
+3. Set your Gemini API key:
+   ```bash
+   export GEMINI_API_KEY='your-api-key'
+   ```
+4. Run the web server:
+   ```bash
+   gunicorn app:app
+   ```
+
+## Deployment on Render
+
+To host this chatbot for free using a public URL on Render, follow these steps:
+
+1. **Push to GitHub**: Make sure your code is pushed to a GitHub repository.
+2. **Create a Render Account**: Go to [render.com](https://render.com) and sign up/log in.
+3. **New Web Service**: Click on "New" -> "Web Service".
+4. **Connect GitHub**: Select "Build and deploy from a Git repository" and connect your GitHub account. Select the repository containing this chatbot.
+5. **Configure the Service**:
+   - **Name**: Choose a name for your service (e.g., `saudi-ecommerce-bot`).
+   - **Environment**: Select `Python 3`.
+   - **Region**: Choose a region closest to your users.
+   - **Branch**: Typically `main` or `master`.
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app:app`
+6. **Set Environment Variables**:
+   - Scroll down to the "Environment Variables" section.
+   - Click "Add Environment Variable".
+   - Key: `GEMINI_API_KEY`
+   - Value: Paste your actual Gemini API Key here.
+7. **Deploy**: Click "Create Web Service". Render will automatically build and deploy your app.
+8. **Auto-Updates**: Because you connected your GitHub repository, any future `git push` to the selected branch will automatically trigger a new deployment.
