@@ -147,8 +147,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-2. requirements.txt
-Save the following text in a file named requirements.txt:
-
-google-generativeai>=0.4.0
-python-dotenv>=1.0.0
