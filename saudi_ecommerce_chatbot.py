@@ -22,7 +22,7 @@ class SaudiEcommerceChatbot:
         :param model_name: The Gemini model to use. Default is gemini-1.5-flash.
         :param max_concurrent_users: Maximum number of simultaneous users.
         """
-        self.api_key = api_key or os.environ.get("AIzaSyBMO3krmKETKrpiRSyED85rEvzMnmeO1Lo")
+        self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
         if not self.api_key:
             raise ValueError("Gemini API key must be provided either via the api_key parameter or the GEMINI_API_KEY environment variable.")
         
