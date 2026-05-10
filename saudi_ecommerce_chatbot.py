@@ -3,9 +3,9 @@ import sys
 import time
 
 try:
-    import google.generativeai as genai
+    from google import genai
 except ImportError:
-    print("Error: The 'google-generativeai' library is not installed. Please install it using 'pip install -r requirements.txt'")
+    print("Error: The 'google-genai' library is not installed. Please install it using 'pip install -r requirements.txt'")
     sys.exit(1)
 
 # Default system prompt provided by the service provider
@@ -13,33 +13,27 @@ SYSTEM_PROMPT = """You are a customer service chatbot for an e-commerce website.
 When you don't know an answer, respond politely and guide the customer to contact human support via WhatsApp at {whatsapp_number}. Do not create information. Maintain a friendly, human-like persona, acting as a helpful customer service representative."""
 
 class SaudiEcommerceChatbot:
-    def __init__(self, api_key=None, whatsapp_number="[Insert WhatsApp Number Here]", model_name="gemini-1.5-flash", max_concurrent_users=15):
+    def __init__(self, api_key=None, whatsapp_number="[Insert WhatsApp Number Here]", model_name="gemini-2.5-flash", max_concurrent_users=15):
         """
         Initialize the Chatbot Manager.
 
         :param api_key: Gemini API key. If not provided, it will look for the GEMINI_API_KEY environment variable.
         :param whatsapp_number: The WhatsApp number to provide to users when human support is needed.
-        :param model_name: The Gemini model to use. Default is gemini-1.5-flash.
+        :param model_name: The Gemini model to use. Default is gemini-2.5-flash.
         :param max_concurrent_users: Maximum number of simultaneous users.
         """
         self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
         if not self.api_key:
             raise ValueError("Gemini API key must be provided either via the api_key parameter or the GEMINI_API_KEY environment variable.")
         
-        # Configure Gemini
-        genai.configure(api_key=self.api_key)
+        # Configure Gemini Client
+        self.client = genai.Client(api_key=self.api_key)
             
         self.whatsapp_number = whatsapp_number
         self.model_name = model_name
         self.max_concurrent_users = max_concurrent_users
         
-        formatted_system_prompt = SYSTEM_PROMPT.format(whatsapp_number=self.whatsapp_number)
-        
-        # Initialize the model with the system instruction
-        self.model = genai.GenerativeModel(
-            model_name=self.model_name,
-            system_instruction=formatted_system_prompt
-        )
+        self.formatted_system_prompt = SYSTEM_PROMPT.format(whatsapp_number=self.whatsapp_number)
         
         # Dictionary to keep track of active user chat sessions
         self.active_sessions = {}
@@ -64,7 +58,12 @@ class SaudiEcommerceChatbot:
     def reset_conversation(self, user_id):
         """Resets the conversation history for a specific user."""
         if user_id in self.active_sessions:
-            self.active_sessions[user_id] = self.model.start_chat()
+            self.active_sessions[user_id] = self.client.chats.create(
+                model=self.model_name,
+                config=genai.types.GenerateContentConfig(
+                    system_instruction=self.formatted_system_prompt
+                )
+            )
             self.session_last_active[user_id] = time.time()
 
     def chat(self, user_id, user_message):
@@ -85,7 +84,12 @@ class SaudiEcommerceChatbot:
                 return "المعذرة، فريقنا مشغول حالياً، ثواني وبنكون معاك، شكراً لانتظارك."
             else:
                 # Start a new chat session for this user
-                self.active_sessions[user_id] = self.model.start_chat()
+                self.active_sessions[user_id] = self.client.chats.create(
+                    model=self.model_name,
+                    config=genai.types.GenerateContentConfig(
+                        system_instruction=self.formatted_system_prompt
+                    )
+                )
         
         # Update last active time
         self.session_last_active[user_id] = time.time()
