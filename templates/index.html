@@ -10,30 +10,73 @@
             background-color: #f0f2f5;
             margin: 0;
             padding: 20px;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* Floating Chat Widget Styles */
+        .chat-widget-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #008069;
+            color: white;
+            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            box-sizing: border-box;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 1000;
+            transition: transform 0.2s;
         }
+        .chat-widget-btn:hover {
+            transform: scale(1.1);
+            background-color: #005c4b;
+        }
+        .chat-widget-btn svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
         .chat-container {
+            position: fixed;
+            bottom: 90px;
+            left: 20px;
             background-color: white;
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 500px;
-            height: 80vh;
-            display: flex;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            width: 350px;
+            height: 500px;
+            display: none; /* Hidden by default */
             flex-direction: column;
             overflow: hidden;
+            z-index: 1000;
         }
         .chat-header {
             background-color: #008069;
             color: white;
             padding: 15px 20px;
-            font-size: 1.2em;
+            font-size: 1.1em;
             font-weight: bold;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+        .close-btn:hover {
+            color: #ddd;
         }
         .chat-messages {
             flex: 1;
@@ -100,9 +143,25 @@
 </head>
 <body>
 
-<div class="chat-container">
+<!-- Dummy content to show it's a website -->
+<div style="max-width: 800px; margin: 0 auto; text-align: center; padding-top: 50px;">
+    <h1 style="color: #008069;">مرحباً بك في متجرنا</h1>
+    <p>تصفح أحدث المنتجات واكتشف عروضنا المميزة.</p>
+    <p style="color: #666; margin-top: 20px;">اضغط على أيقونة المحادثة في الأسفل للتواصل مع خدمة العملاء.</p>
+</div>
+
+<!-- Floating Chat Button -->
+<div class="chat-widget-btn" id="chat-widget-btn" onclick="toggleChat()">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+    </svg>
+</div>
+
+<!-- Chat Container -->
+<div class="chat-container" id="chat-container">
     <div class="chat-header">
-        خدمة العملاء - متجرنا
+        <span>خدمة العملاء</span>
+        <button class="close-btn" onclick="toggleChat()">&times;</button>
     </div>
     <div class="chat-messages" id="chat-messages">
         <div class="message bot-message">
@@ -117,9 +176,19 @@
 </div>
 
 <script>
+    const chatContainer = document.getElementById('chat-container');
     const chatMessages = document.getElementById('chat-messages');
     const userInput = document.getElementById('user-input');
     const typingIndicator = document.getElementById('typing-indicator');
+
+    function toggleChat() {
+        if (chatContainer.style.display === 'none' || chatContainer.style.display === '') {
+            chatContainer.style.display = 'flex';
+            userInput.focus();
+        } else {
+            chatContainer.style.display = 'none';
+        }
+    }
 
     function appendMessage(text, isUser) {
         const messageDiv = document.createElement('div');
